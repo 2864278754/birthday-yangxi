@@ -6,30 +6,42 @@
 <meta name="theme-color" content="#0c0c0f">
 <title>生日快乐 · Happy Birthday</title>
 
-<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
 <canvas id="fx"></canvas>
 
-<!-- ============ 正在播放 · 歌曲信息 ============ -->
-<div class="now-playing" id="nowPlaying" title="点击在网易云搜索这首歌">
+<!-- ============ 侧边触发条 ============ -->
+<button class="drawer-trigger" id="drawerTrigger" type="button" aria-label="打开播放信息">
+  <span class="drawer-trigger-line"></span>
+</button>
+
+<!-- ============ 抽屉遮罩 ============ -->
+<div class="drawer-overlay" id="drawerOverlay"></div>
+
+<!-- ============ 侧边抽屉 · 正在播放 ============ -->
+<aside class="drawer" id="songDrawer" aria-label="正在播放">
+  <button class="drawer-close" id="drawerClose" type="button" aria-label="关闭">×</button>
+
   <div class="np-header">
     <span class="np-dot"></span>
     <span class="np-label">正在播放 · 林俊杰</span>
   </div>
-  <div class="np-body">
+
+  <div class="np-body" id="nowPlaying" title="点击在网易云搜索这首歌">
     <p class="np-title" id="npTitle">江南</p>
     <p class="np-meta" id="npMeta">《第二天堂》 · 2004</p>
     <p class="np-lyric" id="npLyric">圈圈圆圆圈圈，天天年年天天的我</p>
   </div>
+
   <div class="np-controls">
-    <span class="np-search-hint">点击搜索</span>
+    <span class="np-search-hint">点击歌名去搜索</span>
     <button class="np-btn" id="npPrev" type="button" aria-label="上一首">‹</button>
     <button class="np-btn" id="npNext" type="button" aria-label="下一首">›</button>
   </div>
-</div>
+</aside>
 
 <main class="stage">
 
@@ -76,6 +88,6 @@
   </div>
 </div>
 
-<script src="js/script.js"></script>
+<script src="script.js"></script>
 </body>
 </html>
