@@ -234,7 +234,8 @@
      4. 交互：点击放烟花
      ======================================================== */
   function handlePointer(e) {
-    if (e.target && e.target.closest && e.target.closest('button, .panel, .panel-overlay, .now-playing')) return;
+    if (e.target && e.target.closest &&
+        e.target.closest('button, .panel, .panel-overlay, .drawer, .drawer-overlay, .drawer-trigger')) return;
     const w = screenToWorld(e.clientX, e.clientY);
     explode(w.x, w.y, w.z);
   }
@@ -248,7 +249,35 @@
   });
 
   /* ========================================================
-     5. 正在播放 · 歌曲信息模块
+     5. 侧边抽屉开关
+     ======================================================== */
+  const drawer = document.getElementById('songDrawer');
+  const drawerOverlay = document.getElementById('drawerOverlay');
+  const drawerTrigger = document.getElementById('drawerTrigger');
+  const drawerClose = document.getElementById('drawerClose');
+
+  function openDrawer() {
+    drawer.classList.add('open');
+    drawerOverlay.classList.add('open');
+    document.body.classList.add('drawer-open');
+  }
+
+  function closeDrawer() {
+    drawer.classList.remove('open');
+    drawerOverlay.classList.remove('open');
+    document.body.classList.remove('drawer-open');
+  }
+
+  drawerTrigger.addEventListener('click', openDrawer);
+  drawerClose.addEventListener('click', closeDrawer);
+  drawerOverlay.addEventListener('click', closeDrawer);
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') closeDrawer();
+  });
+
+  /* ========================================================
+     6. 正在播放 · 歌曲信息
      ======================================================== */
   const SONGS = [
     {
@@ -357,7 +386,7 @@
   });
 
   /* ========================================================
-     6. 外部音乐跳转
+     7. 外部音乐跳转
      ======================================================== */
   function parseMusicLink(url) {
     url = url.trim();
@@ -499,7 +528,7 @@
   });
 
   /* ========================================================
-     7. 启动
+     8. 启动
      ======================================================== */
   resize();
 
