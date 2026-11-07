@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#0c0c0f">
+<title>生日快乐 · Happy Birthday</title>
+
+<link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+<canvas id="fx"></canvas>
+
+<!-- ============ 正在播放 · 歌曲信息 ============ -->
+<div class="now-playing" id="nowPlaying" title="点击在网易云搜索这首歌">
+  <div class="np-header">
+    <span class="np-dot"></span>
+    <span class="np-label">正在播放 · 林俊杰</span>
+  </div>
+  <div class="np-body">
+    <p class="np-title" id="npTitle">江南</p>
+    <p class="np-meta" id="npMeta">《第二天堂》 · 2004</p>
+    <p class="np-lyric" id="npLyric">圈圈圆圆圈圈，天天年年天天的我</p>
+  </div>
+  <div class="np-controls">
+    <span class="np-search-hint">点击搜索</span>
+    <button class="np-btn" id="npPrev" type="button" aria-label="上一首">‹</button>
+    <button class="np-btn" id="npNext" type="button" aria-label="下一首">›</button>
+  </div>
+</div>
+
+<main class="stage">
+
+  <header class="hero">
+    <p class="eyebrow">Happy Birthday</p>
+    <h1 class="title">生日快乐</h1>
+    <p class="name">杨夕</p>
+    <p class="wish">
+      愿你落笔有山河，提按皆从容；<br>
+      横竖见风骨，撇捺藏温柔。<br>
+      最重要的——章法有留白，人生有余闲，岁岁皆自在。
+    </p>
+  </header>
+
+  <div class="cake-scene" aria-hidden="true">
+    <div class="cake">
+      <div class="candle"><div class="flame"></div></div>
+      <div class="layer layer-1"></div>
+      <div class="layer layer-2"></div>
+      <div class="layer layer-3"></div>
+      <div class="plate"></div>
+    </div>
+  </div>
+
+</main>
+
+<button id="musicFab" class="music-fab" type="button" aria-label="播放音乐">♫</button>
+
+<div class="panel-overlay" id="panelOverlay">
+  <div class="panel" role="dialog" aria-label="播放音乐">
+    <button class="panel-close" id="panelClose" type="button" aria-label="关闭">×</button>
+    <h2>播放音乐</h2>
+    <p>粘贴网易云 / QQ音乐 / Spotify 的歌曲分享链接，将直接唤起对应 App 播放。</p>
+    <input id="musicInput" class="panel-input" type="url" inputmode="url" autocomplete="off" placeholder="粘贴音乐分享链接…" />
+    <div class="panel-actions">
+      <button id="openLinkBtn" class="panel-btn primary" type="button">打开链接</button>
+      <button id="searchBtn" class="panel-btn" type="button">搜索生日歌</button>
+    </div>
+    <div class="panel-hint" id="panelHint">
+      支持：<br>
+      网易云 music.163.com/song?id=…　·　QQ音乐 y.qq.com/…<br>
+      Spotify open.spotify.com/track/…　·　YouTube Music music.youtube.com/watch?v=…
+    </div>
+  </div>
+</div>
+
+<script src="js/script.js"></script>
+</body>
+</html>
