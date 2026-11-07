@@ -12,6 +12,9 @@
     return 'rgba(' + ((n >> 16) & 255) + ',' + ((n >> 8) & 255) + ',' + (n & 255) + ',' + a + ')';
   }
 
+  const isMobile = window.matchMedia('(max-width: 768px)').matches
+                || window.matchMedia('(pointer: coarse)').matches;
+
   /* ========================================================
      1. 画布 & 相机
      ======================================================== */
@@ -23,7 +26,9 @@
   const CAM = { x: 0, y: 42, z: -115 };
 
   function resize() {
-    DPR = Math.min(window.devicePixelRatio || 1, 2);
+    // 移动端 DPR 限制在 1.75，避免高分辨率手机渲染过载
+    const maxDpr = isMobile ? 1.75 : 2;
+    DPR = Math.min(window.devicePixelRatio || 1, maxDpr);
     W = window.innerWidth;
     H = window.innerHeight;
     canvas.width = Math.round(W * DPR);
@@ -86,6 +91,13 @@
   const GRAV = -26;
   const DRAG = 1.7;
 
+  // 移动端减少每朵烟花的粒子数，避免掉帧
+  const SPARK_MIN = isMobile ? 20 : 32;
+  const SPARK_MAX = isMobile ? 42 : 68;
+  // 自动发射间隔：移动端稍长，减少渲染压力
+  const ROCKET_GAP_MIN = isMobile ? 1.6 : 1.1;
+  const ROCKET_GAP_MAX = isMobile ? 3.2 : 2.6;
+
   function spawnRocket() {
     const startY  = rand(-14, 4);
     const targetY = rand(56, 108);
@@ -104,7 +116,7 @@
 
   function explode(x, y, z) {
     const R = rand(18, 36);
-    const count = Math.round(rand(32, 68));
+    const count = Math.round(rand(SPARK_MIN, SPARK_MAX));
     const base = Math.floor(Math.random() * COLORS.length);
     const dual = Math.random() < 0.35;
     const alt = (base + 2 + Math.floor(Math.random() * 2)) % COLORS.length;
@@ -138,7 +150,7 @@
 
     rocketTimer -= dt;
     if (rocketTimer <= 0) {
-      rocketTimer = rand(1.1, 2.6);
+      rocketTimer = rand(ROCKET_GAP_MIN, ROCKET_GAP_MAX);
       spawnRocket();
     }
 
@@ -248,8 +260,13 @@
     setTimeout(function () { resize(); }, 260);
   });
 
+  // iOS 地址栏收起/展开时同步画布尺寸
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener('resize', function () { resize(); });
+  }
+
   /* ========================================================
-     5. 侧边抽屉开关
+     5. 侧边抽屉开关 + 滑动手势
      ======================================================== */
   const drawer = document.getElementById('songDrawer');
   const drawerOverlay = document.getElementById('drawerOverlay');
@@ -276,45 +293,40 @@
     if (e.key === 'Escape') closeDrawer();
   });
 
+  // 触摸滑动手势：右滑关闭抽屉
+  let touchStartX = 0;
+  let touchStartY = 0;
+  let touchActive = false;
+
+  drawer.addEventListener('touchstart', function (e) {
+    if (!drawer.classList.contains('open')) return;
+    const t = e.touches[0];
+    touchStartX = t.clientX;
+    touchStartY = t.clientY;
+    touchActive = true;
+  }, { passive: true });
+
+  drawer.addEventListener('touchend', function (e) {
+    if (!touchActive) return;
+    touchActive = false;
+    const t = e.changedTouches[0];
+    const dx = t.clientX - touchStartX;
+    const dy = t.clientY - touchStartY;
+    // 向右滑动超过 60px，且水平位移大于垂直位移 → 关闭
+    if (dx > 60 && Math.abs(dx) > Math.abs(dy)) {
+      closeDrawer();
+    }
+  }, { passive: true });
+
   /* ========================================================
      6. 正在播放 · 歌曲信息
      ======================================================== */
   const SONGS = [
-    {
-      title: '江南',
-      album: '第二天堂',
-      year: 2004,
-      lyric: '圈圈圆圆圈圈，天天年年天天的我，深深看你的脸',
-      search: '江南 林俊杰'
-    },
-    {
-      title: '修炼爱情',
-      album: '因你而在',
-      year: 2013,
-      lyric: '修炼爱情的悲欢，我们这些努力不简单',
-      search: '修炼爱情 林俊杰'
-    },
-    {
-      title: '关键词',
-      album: '和自己对话',
-      year: 2015,
-      lyric: '好好爱自己，就有人会爱你',
-      search: '关键词 林俊杰'
-    },
-    {
-      title: '愿与愁',
-      album: '重拾_快乐',
-      year: 2023,
-      lyric: '你我终会沦为尘埃漂流，等待花季烟雨稠',
-      search: '愿与愁 林俊杰'
-    },
-    {
-      title: '可惜没如果',
-      album: '新地球',
-      year: 2014,
-      lyric: '倘若那天，把该说的话好好说，该体谅的不执着',
-      search: '可惜没如果 林俊杰'
-    }
+    { title: '江南',       album: '第二天堂',     year: 2004, lyric: '圈圈圆圆圈圈，天天年年天天的我，深深看你的脸', search: '江南 林俊杰' },
+    { title: '修炼爱情',   album: '因你而在',     year: 2013, lyric: '修炼爱情的悲欢，我们这些努力不简单',             search: '修炼爱情 林俊杰' },
+    { title: '关键词',     album: '和自己对话',   year: 2015, lyric: '好好爱自己，就有人会爱你',                       search: '关键词 林俊杰' },
+    { title: '愿与愁',     album: '重拾_快乐',    year: 2023, lyric: '你我终会沦为尘埃漂流，等待花季烟雨稠',             search: '愿与愁 林俊杰' },
+    { title: '可惜没如果', album: '新地球',       year: 2014, lyric: '倘若那天，把该说的话好好说，该体谅的不执着',       search: '可惜没如果 林俊杰' }
   ];
 
   let songIndex = 0;
@@ -469,7 +481,8 @@
 
   function openPanel() {
     overlay.classList.add('open');
-    setTimeout(function () { input.focus(); }, 400);
+    // 移动端延时聚焦，等键盘弹出动画
+    setTimeout(function () { input.focus(); }, isMobile ? 350 : 400);
   }
 
   function closePanel() {
